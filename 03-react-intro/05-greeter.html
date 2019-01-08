@@ -8,7 +8,10 @@
 	<script src="babel.min.js"></script>
 	<script type="text/babel">
 		class Greeter extends React.Component{
-			render(){
+			onBtnGreetClick = () => {
+				console.log('greet button clicked');
+			}
+			render = () => {
 				let greetMsg = '[Default greet message]';
 				return(
 					<div>
@@ -16,7 +19,7 @@
 						<hr/>
 						<label>User Name :</label>
 						<input type="text" />
-						<input type="button" value="Greet" />
+						<input type="button" value="Greet" onClick={this.onBtnGreetClick}/>
 						<div>{greetMsg}</div>
 					</div>
 				)
