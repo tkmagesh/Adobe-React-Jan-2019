@@ -3,19 +3,48 @@
 <head>
 	<meta charset="UTF-8">
 	<title>Calculator</title>
+	<script src="react.development.js"></script>
+	<script src="react-dom.development.js"></script>
+	<script src="babel.min.js"></script>
+	<script type="text/babel">
+		class Calculator extends React.Component{
+			n1 = 0;
+			n2 = 0;
+			state = { result : 0 };
+
+			onNumber1Change = (evt) => {
+				this.n1 = parseInt(evt.target.value);
+			}
+			onNumber2Change = (evt) => {
+				this.n2 = parseInt(evt.target.value);
+			}
+			onAddClick = () => {
+				let result  = this.n1 + this.n2;
+				this.setState({ result : result});
+			}
+			render = () => {
+				return(
+					<section>
+						<input type="number" onChange={this.onNumber1Change}/>
+						<input type="number" onChange={this.onNumber2Change}/>
+						<br/>
+						<input type="button" value="Add" onClick={this.onAddClick}/>
+						<input type="button" value="Subtract" />
+						<input type="button" value="Multiply" />
+						<input type="button" value="Divide" />
+						<div>{this.state.result}</div>
+					</section>
+				)
+			}
+		}
+
+		ReactDOM.render(<Calculator/>,
+			document.getElementById('root'));
+	</script>
 </head>
 <body>
 	<h1>Calculator</h1>
 	<hr>
-	<section>
-		<input type="number">
-		<input type="number">
-		<br/>
-		<input type="button" value="Add">
-		<input type="button" value="Subtract">
-		<input type="button" value="Multiply">
-		<input type="button" value="Divide">
-		<div>[Result]</div>
-	</section>
+	<div id="root"></div>
 </body>
 </html>
