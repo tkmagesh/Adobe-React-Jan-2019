@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>React Intro</title>
+	<script src="react.development.js"></script>
+	<script src="react-dom.development.js"></script>
+	<script>
+		window.addEventListener('DOMContentLoaded', init);
+		function init(){
+			var btnRender = document.getElementById('btnRender');
+			btnRender.addEventListener('click', onBtnRenderClick);
+		}
+		var counter = 0;
+		function onBtnRenderClick(){
+			++counter;
+			var appEle = React.createElement('div', null, 
+				React.createElement('section', null,
+					React.createElement('h1', null, 'React.js')
+				),
+				React.createElement('h4', null, 'Render # - ' + counter),
+				React.createElement('section', null,
+					React.createElement('h3', null, 'Advantages'),
+					React.createElement('ol', null,
+						React.createElement('li', null, 'Simple'),
+						React.createElement('li', null, 'Efficient'),
+					)
+				),
+				React.createElement('section', null,
+					React.createElement('h3', null, 'Introduction'),
+					React.createElement('p', null, 'Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat nonproident, sunt in culpa qui officia deserunt mollit anim id est laborum.'),
+					React.createElement('p', null, 'Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat nonproident, sunt in culpa qui officia deserunt mollit anim id est laborum.'),
+				)
+			);
+
+			ReactDOM.render(appEle, document.getElementById('root'));
+		}
+	</script>
+</head>
+<body>
+	<input type="button" value="Render" id="btnRender">
+	<div id="root"></div>
+</body>
+</html>
