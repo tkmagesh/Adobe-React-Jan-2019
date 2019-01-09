@@ -7,20 +7,62 @@
 	<script src="react-dom.development.js"></script>
 	<script src="babel.min.js"></script>
 	<script type="text/babel">
+
+		class EventEmitter {
+			_listeners = [];
+			
+			subscribe(listenerFn){
+				this._listeners.push(listenerFn);
+			
+			}
+			triggerChange(){
+				this._listeners.forEach(listenerFn => listenerFn());
+			}
+		}
+
+		//state & behavior
+		class CalculatorModel extends EventEmitter{
+			_n1 = 0;
+			_n2 = 0;
+			result = 0;
+
+
+			get n1(){
+				return this._n1;
+			}
+
+			set n1(value){
+				this._n1 = value;
+				this.triggerChange();
+			}
+
+			get n2(){
+				return this._n2;
+			}
+
+			set n2(value){
+				this._n2 = value;
+				this.triggerChange();
+			}
+
+			add(){
+				this.result = this.n1 + this.n2;
+				this.triggerChange();
+			}
+		}
+
+		//View
 		class Calculator extends React.Component{
-			n1 = 0;
-			n2 = 0;
-			state = { result : 0 };
+			
 
 			onNumber1Change = (evt) => {
-				this.n1 = parseInt(evt.target.value);
+				this.props.model.n1 = parseInt(evt.target.value);
 			}
 			onNumber2Change = (evt) => {
-				this.n2 = parseInt(evt.target.value);
+				this.props.model.n2 = parseInt(evt.target.value);
 			}
 			onAddClick = () => {
-				let result  = this.n1 + this.n2;
-				this.setState({ result : result});
+				this.props.model.add();
 			}
 			render = () => {
 				return(
@@ -32,14 +74,21 @@
 						<input type="button" value="Subtract" />
 						<input type="button" value="Multiply" />
 						<input type="button" value="Divide" />
-						<div>{this.state.result}</div>
+						<span> [ {this.props.model.n1} ] </span>
+						<span> [ {this.props.model.n2} ] </span>
+						<div>{this.props.model.result}</div>
 					</section>
 				)
 			}
 		}
 
-		ReactDOM.render(<Calculator/>,
-			document.getElementById('root'));
+		let model = new CalculatorModel();
+		function renderApp(){
+			ReactDOM.render(<Calculator model={model}/>,
+				document.getElementById('root'));
+		}
+		renderApp();
+		model.subscribe(renderApp);
 	</script>
 </head>
 <body>
