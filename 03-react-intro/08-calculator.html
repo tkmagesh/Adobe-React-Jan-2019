@@ -92,7 +92,7 @@
 				this.props.model[this.selectedOperator]();
 			}
 			render(){
-				let resultStyle = this.props.model.result < 0 ? 'negative' : 'positive';
+				
 				return(
 					<section>
 						<input type="number" onChange={this.onNumber1Change}/>
@@ -104,7 +104,7 @@
 						</select>
 						<input type="number" onChange={this.onNumber2Change}/>
 						<input type="button" value="Calculate" onClick={this.onCalculateClick}/>
-						<div className={resultStyle}>{this.props.model.result}</div>
+						<CalculatorResult data={this.props.model.result}></CalculatorResult>
 					</section>
 				)
 			}
@@ -143,12 +143,20 @@
 						<input type="button" value="Divide" onClick={this.onDivideClick}/>
 						<span> [ {this.props.model.n1} ] </span>
 						<span> [ {this.props.model.n2} ] </span>
-						<div>{this.props.model.result}</div>
+						<CalculatorResult data={this.props.model.result}></CalculatorResult>
 					</section>
 				)
 			}
 		}
 
+		class CalculatorResult extends React.Component{
+			render(){
+				let resultStyle = this.props.data < 0 ? 'negative' : 'positive';
+				return(
+					<div className={resultStyle}>{this.props.data}</div>
+				)
+			}
+		}
 		let model = new CalculatorModel();
 		function renderApp(){
 			ReactDOM.render(
