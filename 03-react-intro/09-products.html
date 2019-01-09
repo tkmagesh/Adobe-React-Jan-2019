@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Products</title>
+	<script src="react.development.js"></script>
+	<script src="react-dom.development.js"></script>
+	<script src="babel.min.js"></script>
+	<script type="text/babel">
+		class EventEmitter {
+			_listeners = [];
+			
+			subscribe(listenerFn){
+				this._listeners.push(listenerFn);
+			
+			}
+			triggerChange(){
+				this._listeners.forEach(listenerFn => listenerFn());
+			}
+		}
+		class ProductsCollection extends EventEmitter{
+			_productNames = [];
+
+			getAll(){
+				return [...this._productNames]
+			}
+
+			getCount(){
+				return this._productNames.length;
+			}
+
+			addNew(productName){
+				this._productNames.push(productName);
+				this.triggerChange();
+			}
+		}
+
+
+		class Products extends React.Component{
+			txtProductNameRef = React.createRef();
+
+			onAddNewClick = () => {
+				let newProductName = this.txtProductNameRef.current.value;
+				this.props.model.addNew(newProductName);
+			}
+			render(){
+				let { model } = this.props,
+					productNames = model.getAll();
+				let productItems = productNames.map((productName, index) => (
+					<li key={index}>{productName}</li>
+				));
+				return(
+					<section>
+						<label>Product Name:</label>
+						<input type="text" ref={this.txtProductNameRef}/>
+						<input type="button" value="Add New" onClick={this.onAddNewClick}/>
+						<ol>
+							{productItems}
+						</ol>
+					</section>
+				)
+			}
+		}
+
+		class ProductsCount extends React.Component{
+			render(){
+				return(
+					<div>Count : {this.props.data}</div>
+				)
+			}
+		}	
+
+		let model = new ProductsCollection();
+		function renderApp(){
+			ReactDOM.render(
+				<div>
+					<ProductsCount data={model.getCount()} />
+					<Products model={model}/>
+				</div>
+				,
+				document.getElementById('root')
+			);
+		}
+		renderApp();
+		model.subscribe(renderApp);
+	</script>
+</head>
+<body>
+	<h1>Products</h1>
+	<hr>
+	<div id="root"></div>
+</body>
+</html>
