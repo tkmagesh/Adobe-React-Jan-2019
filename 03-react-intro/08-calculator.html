@@ -65,9 +65,12 @@
 			}
 		}
 
-		class Calculator extends React.Component{
+		class Calculator1 extends React.Component{
 			selectedOperator = '';
 
+			constructor(){
+				
+			}
 			onNumber1Change = (evt) => {
 				this.props.model.n1 = parseInt(evt.target.value);
 			}
@@ -98,9 +101,52 @@
 			}
 		}
 
+		class Calculator2 extends React.Component{
+			
+
+			onNumber1Change = (evt) => {
+				this.props.model.n1 = parseInt(evt.target.value);
+			}
+			onNumber2Change = (evt) => {
+				this.props.model.n2 = parseInt(evt.target.value);
+			}
+			onAddClick = () => {
+				this.props.model.add();
+			}
+			onSubtractClick = () => {
+				this.props.model.subtract();
+			}
+			onMultiplyClick = () => {
+				this.props.model.multiply();
+			}
+			onDivideClick = () => {
+				this.props.model.divide();
+			}
+			render = () => {
+				return(
+					<section>
+						<input type="number" onChange={this.onNumber1Change}/>
+						<input type="number" onChange={this.onNumber2Change}/>
+						<br/>
+						<input type="button" value="Add" onClick={this.onAddClick}/>
+						<input type="button" value="Subtract" onClick={this.onSubtractClick}/>
+						<input type="button" value="Multiply" onClick={this.onMultiplyClick}/>
+						<input type="button" value="Divide" onClick={this.onDivideClick}/>
+						<span> [ {this.props.model.n1} ] </span>
+						<span> [ {this.props.model.n2} ] </span>
+						<div>{this.props.model.result}</div>
+					</section>
+				)
+			}
+		}
+
 		let model = new CalculatorModel();
 		function renderApp(){
-			ReactDOM.render(<Calculator model={model} />,
+			ReactDOM.render(
+				<div>
+					<Calculator1 model={model} />
+					<Calculator2 model={model} />
+				</div>,
 				document.getElementById('root'));
 		}
 		renderApp();
