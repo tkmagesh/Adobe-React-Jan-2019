@@ -3,6 +3,14 @@
 <head>
 	<meta charset="UTF-8">
 	<title>Calculator</title>
+	<style>
+		.positive {
+			color : green;
+		}
+		.negative{
+			color : red;
+		}
+	</style>
 	<script src="react.development.js"></script>
 	<script src="react-dom.development.js"></script>
 	<script src="babel.min.js"></script>
@@ -69,7 +77,7 @@
 			selectedOperator = '';
 
 			constructor(){
-				
+				super();
 			}
 			onNumber1Change = (evt) => {
 				this.props.model.n1 = parseInt(evt.target.value);
@@ -84,6 +92,7 @@
 				this.props.model[this.selectedOperator]();
 			}
 			render(){
+				let resultStyle = this.props.model.result < 0 ? 'negative' : 'positive';
 				return(
 					<section>
 						<input type="number" onChange={this.onNumber1Change}/>
@@ -95,7 +104,7 @@
 						</select>
 						<input type="number" onChange={this.onNumber2Change}/>
 						<input type="button" value="Calculate" onClick={this.onCalculateClick}/>
-						<div>{this.props.model.result}</div>
+						<div className={resultStyle}>{this.props.model.result}</div>
 					</section>
 				)
 			}
