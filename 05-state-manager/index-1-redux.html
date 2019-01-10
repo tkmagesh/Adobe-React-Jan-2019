@@ -3,7 +3,7 @@
 <head>
 	<meta charset="UTF-8">
 	<title>State Manager</title>
-	<script src="stateManager.js"></script>
+	<script src="redux.js"></script>
 	<script src="react.development.js"></script>
 	<script src="react-dom.development.js"></script>
 	<script src="babel.min.js"></script>
@@ -18,7 +18,7 @@
 			return currentState;
 		}
 
-		let store = SM.createStore(spinnerReducer);
+		let store = Redux.createStore(spinnerReducer);
 
 		let spinnerActionCreators = {
 			up(){
@@ -35,61 +35,6 @@
 			}
 		}
 
-		
-
-		{/*
-		class Spinner extends React.Component{
-			render(){
-				let { value, up, down } = this.props;
-				return(
-					<section>
-						<input type="button" value="DOWN" onClick={down}/>
-						<span> [ {value} ] </span>
-						<input type="button" value="UP" onClick={up}/>
-					</section>
-				)
-			}
-		}
-		*/}
-
-		{/* A function as a component => Higher Order Component */}
-		{/*
-		let Spinner = function(props){
-			let { value, up, down } = props;
-			return(
-				<section>
-					<input type="button" value="DOWN" onClick={down}/>
-					<span> [ {value} ] </span>
-					<input type="button" value="UP" onClick={up}/>
-				</section>
-			)
-		}
-		*/}
-
-		{/*
-		let Spinner = function({ value, up, down }){
-			return(
-				<section>
-					<input type="button" value="DOWN" onClick={down}/>
-					<span> [ {value} ] </span>
-					<input type="button" value="UP" onClick={up}/>
-				</section>
-			)
-		}
-		*/}
-
-		{/*
-		let Spinner = ({ value, up, down }) => {
-			return(
-				<section>
-					<input type="button" value="DOWN" onClick={down}/>
-					<span> [ {value} ] </span>
-					<input type="button" value="UP" onClick={up}/>
-				</section>
-			)
-		}
-		*/}
-
 		let Spinner = ({ value, up, down, doubleUp }) => (
 			<section>
 				<input type="button" value="DOWN" onClick={down}/>
@@ -99,7 +44,7 @@
 			</section>
 		);
 		
-		let spinnerActions = SM.bindActionCreators(spinnerActionCreators, store.dispatch);
+		let spinnerActions = Redux.bindActionCreators(spinnerActionCreators, store.dispatch);
 
 		function renderApp(){
 			let value = store.getState();

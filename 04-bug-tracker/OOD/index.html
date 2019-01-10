@@ -51,74 +51,68 @@
 	<script src="react.development.js"></script>
 	<script src="react-dom.development.js"></script>
 	<script src="babel.min.js"></script>
-	<script src="stateManager.js"></script>
 	<script type="text/babel">
-		let dummyBugs = [
-			{name : 'Server communication failure', isClosed : false},
-			{name : 'User actions not recognized', isClosed : true}
-		];
-
-		function bugsReducer(currentState = dummyBugs, action){
-			if (action.type === 'ADD_NEW'){
-				let newBug = action.payload;
-				let newState = [...currentState, newBug];
-				return newState;
+		class EventEmitter {
+			_listeners = [];
+			
+			subscribe(listenerFn){
+				this._listeners.push(listenerFn);
+			
 			}
-			if (action.type === 'REPLACE'){
-				let { oldBug, newBug } = action.payload;
-				let newState = currentState.map(bug => bug === oldBug ? newBug : bug);
-				return newState;
+			triggerChange(){
+				this._listeners.forEach(listenerFn => listenerFn());
 			}
-			return currentState;
-
 		}
+		class BugsCollection extends EventEmitter{
+			_bugs = [];
 
-		let bugActionCreators = {
-			addNew(newBugName){
-				let newBug = { name : newBugName, isClosed : false};
-				let action = { type : 'ADD_NEW', payload : newBug};
-				return action;
-			},
-			toggle(bugToToggle){
-				let toggledBug = { ...bugToToggle, isClosed : !bugToToggle.isClosed };
-				let action = { type : 'REPLACE', payload : { oldBug : bugToToggle, newBug : toggledBug }};
-				return action;
+			addNew(bugName){
+				let newBug = {
+					name : bugName,
+					isClosed : false
+				}
+				this._bugs.push(newBug);
+				this.triggerChange();
 			}
+
+			getAll(){
+				return [...this._bugs];
+			}
+
 		}
 
 		class BugItem extends React.Component{
+			onBugNameClick = () => {
+				console.log('a bug is being clicked', this.props.model);
+			}
 			render(){
-				let { bug, toggle } = this.props;
+				let bug = this.props.model;
 				return(
 					<li>
-						<span className="bugname" onClick={() => toggle(bug)}>
-							{bug.name}
-						</span>
-						<div>[{bug.isClosed.toString()}]</div>
+						<span className="bugname" onClick={this.onBugNameClick}>{JSON.stringify(bug)}</span>
 						<div className="datetime">[Created At]</div>
 					</li>
 				)
 			}
 		}
-
 		class BugTracker extends React.Component{
-			txtNewBugNameRef = React.createRef();
-
+			txtBugNameRef = React.createRef();
 			onAddNewClick = () => {
-				let newBugName = this.txtNewBugNameRef.current.value;
-				this.props.addNew(newBugName);
+				let newBugName = this.txtBugNameRef.current.value;
+				this.props.model.addNew(newBugName);
 			}
+			
 			render(){
-				let { bugs, toggle } = this.props;
-				let bugItems = bugs.map((bug,index) => (
-					<BugItem key={index} bug={bug} toggle={toggle} />
+				let bugs = this.props.model.getAll();
+				let bugItems = bugs.map((bug, index) => (
+					<BugItem model={bug} key={index} />
 				));
 				return(
 					<div>
 						<section className="stats">
 							<span className="closed">1</span>
 							<span> / </span>
-							<span>2</span>
+							<span>{bugs.length}</span>
 						</section>
 						<section className="sort">
 							<label htmlFor="">Order By :</label>
@@ -131,8 +125,8 @@
 						</section>
 						<section className="edit">
 							<label htmlFor="">Bug Name :</label>
-							<input type="text" ref={this.txtNewBugNameRef}/>
-							<input type="button" value="Add New" onClick={this.onAddNewClick} />
+							<input type="text" ref={this.txtBugNameRef}/>
+							<input type="button" value="Add New" onClick={this.onAddNewClick}/>
 						</section>
 						<section className="list">
 							<ol>
@@ -144,17 +138,13 @@
 				)
 			}
 		}
-
-		let store = SM.createStore(bugsReducer);
-		let bugActions = SM.bindActionCreators(bugActionCreators, store.dispatch);
+		let bugsCollection = new BugsCollection();
 		function renderApp(){
-			let bugs = store.getState();
-
-			ReactDOM.render(<BugTracker bugs={bugs} {...bugActions} />,
+			ReactDOM.render(<BugTracker model={bugsCollection}/>,
 				document.getElementById('root'));
 		}
 		renderApp();
-		store.subscribe(renderApp);
+		bugsCollection.subscribe(renderApp);
 	</script>
 </head>
 <body>
