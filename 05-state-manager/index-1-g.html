@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>State Manager</title>
+	<script src="stateManager.js"></script>
+	<script src="react.development.js"></script>
+	<script src="react-dom.development.js"></script>
+	<script src="babel.min.js"></script>
+	<script type="text/babel">
+		function spinnerReducer(currentState = 0, action){
+			if (action.type === 'UP')
+				return currentState + 1 
+			if (action.type === 'DOWN')
+				return currentState - 1;
+			if (action.type === 'DOUBLE_UP')
+				return currentState * 2;
+			return currentState;
+		}
+
+		let store = SM.createStore(spinnerReducer);
+
+		let spinnerActionCreators = {
+			up(){
+				let action = { type : 'UP'};
+				return action;
+			},
+			down(){
+				let action = { type : 'DOWN'};
+				return action;
+			},
+			doubleUp(){
+				let action = { type : 'DOUBLE_UP'};
+				return action;
+			}
+		}
+
+		function bindActionCreators(actionCreators, dispatch){
+			let result = {};
+			for(let key in actionCreators){
+				result[key] = function(){
+					let action = actionCreators[key].apply(undefined, arguments);
+					dispatch(action);
+				}
+			}
+			return result;
+		}
+
+		{/*
+		class Spinner extends React.Component{
+			render(){
+				let { value, up, down } = this.props;
+				return(
+					<section>
+						<input type="button" value="DOWN" onClick={down}/>
+						<span> [ {value} ] </span>
+						<input type="button" value="UP" onClick={up}/>
+					</section>
+				)
+			}
+		}
+		*/}
+
+		{/* A function as a component => Higher Order Component */}
+		{/*
+		let Spinner = function(props){
+			let { value, up, down } = props;
+			return(
+				<section>
+					<input type="button" value="DOWN" onClick={down}/>
+					<span> [ {value} ] </span>
+					<input type="button" value="UP" onClick={up}/>
+				</section>
+			)
+		}
+		*/}
+
+		{/*
+		let Spinner = function({ value, up, down }){
+			return(
+				<section>
+					<input type="button" value="DOWN" onClick={down}/>
+					<span> [ {value} ] </span>
+					<input type="button" value="UP" onClick={up}/>
+				</section>
+			)
+		}
+		*/}
+
+		{/*
+		let Spinner = ({ value, up, down }) => {
+			return(
+				<section>
+					<input type="button" value="DOWN" onClick={down}/>
+					<span> [ {value} ] </span>
+					<input type="button" value="UP" onClick={up}/>
+				</section>
+			)
+		}
+		*/}
+
+		let Spinner = ({ value, up, down, doubleUp }) => (
+			<section>
+				<input type="button" value="DOWN" onClick={down}/>
+				<span> [ {value} ] </span>
+				<input type="button" value="UP" onClick={up}/>
+				<input type="button" value="double Up" onClick={doubleUp}/>
+			</section>
+		);
+		
+
+		let spinnerActions = bindActionCreators(spinnerActionCreators, store.dispatch);
+
+		function renderApp(){
+			let value = store.getState();
+			ReactDOM.render(<Spinner value={value} {...spinnerActions} />,
+				document.getElementById('root'));
+		}
+		renderApp();
+		store.subscribe(renderApp);
+	</script>
+</head>
+<body>
+	<h1>Spinner</h1>
+	<hr>
+	<div id="root"></div>
+</body>
+</html>
