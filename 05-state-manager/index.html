@@ -4,14 +4,55 @@
 	<meta charset="UTF-8">
 	<title>State Manager</title>
 	<script src="stateManager.js"></script>
+	<script src="react.development.js"></script>
+	<script src="react-dom.development.js"></script>
+	<script src="babel.min.js"></script>
+	<script type="text/babel">
+		function spinnerReducer(currentState = 0, action){
+			if (action.type === 'UP')
+				return currentState + action.payload;
+			if (action.type === 'DOWN')
+				return currentState - action.payload;
+			return currentState;
+		}
+
+		var store = SM.createStore(spinnerReducer)
+
+		class Spinner extends React.Component{
+			delta = 1;
+			onUpClick = () => {
+				let upAction = { type : 'UP', payload : this.delta};
+				this.props.store.dispatch(upAction);
+			}
+			onDownClick = () => {
+				let downAction = { type : 'DOWN', payload : this.delta};
+				this.props.store.dispatch(downAction);
+			}
+			render(){
+				let { store } = this.props;
+				let value = store.getState();
+				return(
+					<section>
+						<input type="number" onChange={evt => this.delta = evt.target.valueAsNumber} />
+						<input type="button" value="DOWN" onClick={this.onDownClick}/>
+						<span> [ {value} ] </span>
+						<input type="button" value="UP" onClick={this.onUpClick}/>
+					</section>
+				)
+			}
+		}
+
+		function renderApp(){
+			ReactDOM.render(<Spinner store={store} />,
+				document.getElementById('root'));
+		}
+		renderApp();
+		store.subscribe(renderApp);
+	</script>
 </head>
 <body>
 	<h1>Spinner</h1>
 	<hr>
-	<section>
-		<input type="button" value="DOWN">
-		<span> [ result ] </span>
-		<input type="button" value="UP">
-	</section>
+	<div id="root"></div>
 </body>
 </html>
