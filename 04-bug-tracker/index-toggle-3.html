@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Bug Tracker</title>
+	<script type="text/usecases">
+		1. Add new bugs
+		2. List the added bugs
+		3. Toggle the 'closed' status of any bug
+		4. Remove closed bugs
+		5. Display statistics ( # of closed bugs / total  # of bugs )
+		6. Sort the bugs
+		7. Persist the bugs in the server
+		8. Access the bugs using unique urls
+	</script>
+	<style>
+		body{
+			margin-left: 50px;
+		}
+		section{
+			margin-bottom: 10px;
+		}
+		.stats, .bugname{
+			font-size: 18pt;
+		}
+		.closed{
+			color : red;
+			text-decoration: line-through;
+			font-style: italic;
+			font-weight: bold;
+		}
+		.bugname{
+			cursor : pointer;
+		}
+		.datetime{
+			font-style: italic;
+		}
+		ol{
+			width: 500px;
+			list-style: none;
+			-webkit-padding-start : 0px;
+		}
+		li{
+			margin-bottom: 10px;
+			border: 2px solid gray;
+			border-radius: 5px;
+			background-color: #e7e7e7;
+			padding: 10px;
+		}
+	</style>
+	<script src="react.development.js"></script>
+	<script src="react-dom.development.js"></script>
+	<script src="babel.min.js"></script>
+	<script type="text/babel">
+		class EventEmitter {
+			_listeners = [];
+			
+			subscribe(listenerFn){
+				this._listeners.push(listenerFn);
+			
+			}
+			triggerChange(){
+				this._listeners.forEach(listenerFn => listenerFn());
+			}
+		}
+		class BugsCollection extends EventEmitter{
+			_bugs = [];
+
+			
+			addNew(bugName){
+				let newBug = new Bug(bugName);
+				newBug.subscribe(() => {
+					this.triggerChange();
+				});
+				this._bugs.push(newBug);
+				this.triggerChange();
+			}
+
+			removeClosed(){
+				this._bugs = this._bugs.filter(bug => !bug.isClosed);
+				this.triggerChange();
+			}
+			getAll(){
+				return [...this._bugs];
+			}
+
+		}
+
+		class Bug extends EventEmitter{
+			constructor(name, isClosed = false){
+				super();
+				this.name = name;
+				this.isClosed = isClosed;
+			}
+			toggle(){
+				this.isClosed = !this.isClosed;
+				this.triggerChange();
+			}
+		}
+
+		class BugItem extends React.Component{
+			onBugNameClick = () => {
+				this.props.model.toggle();
+			}
+			render(){
+				let bug = this.props.model;
+				let bugStyle = bug.isClosed ? 'bugname closed' : 'bugname';
+				return(
+					<li>
+						<span className={bugStyle} onClick={this.onBugNameClick}>{JSON.stringify(bug)}</span>
+						<div className="datetime">[Created At]</div>
+					</li>
+				)
+			}
+		}
+		class BugTracker extends React.Component{
+			txtBugNameRef = React.createRef();
+			onAddNewClick = () => {
+				let newBugName = this.txtBugNameRef.current.value;
+				this.props.collectionModel.addNew(newBugName);
+			}
+			
+			render(){
+				let { collectionModel } = this.props,
+					bugs = collectionModel.getAll(),
+					closedCount = bugs.reduce((result, bug) => bug.isClosed ? ++result : result, 0);
+				let bugItems = bugs.map((bug, index) => (
+					<BugItem model={bug} key={index} />
+				));
+				return(
+					<div>
+						<section className="stats">
+							<span className="closed">{closedCount}</span>
+							<span> / </span>
+							<span>{bugs.length}</span>
+						</section>
+						<section className="sort">
+							<label htmlFor="">Order By :</label>
+							<select>
+								<option value=""></option>
+								<option value=""></option>
+							</select>
+							<label htmlFor="">Descending ? :</label>
+							<input type="checkbox" />
+						</section>
+						<section className="edit">
+							<label htmlFor="">Bug Name :</label>
+							<input type="text" ref={this.txtBugNameRef}/>
+							<input type="button" value="Add New" onClick={this.onAddNewClick}/>
+						</section>
+						<section className="list">
+							<ol>
+								{bugItems}
+							</ol>
+							<input type="button" value="Remove Closed" onClick={() => collectionModel.removeClosed()}/>
+						</section>
+					</div>
+				)
+			}
+		}
+		let bugsCollection = new BugsCollection();
+		function renderApp(){
+			ReactDOM.render(<BugTracker collectionModel={bugsCollection}/>,
+				document.getElementById('root'));
+		}
+		renderApp();
+		bugsCollection.subscribe(renderApp);
+	</script>
+</head>
+<body>
+	<h1>Bug Tracker</h1>
+	<hr>
+	<div id="root"></div>
+</body>
+</html>
