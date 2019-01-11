@@ -156,12 +156,63 @@
 			}
 		}
 
-		let store = Redux.createStore(bugsReducer);
+		function spinnerReducer(currentState = 0, action){
+			if (action.type === 'UP')
+				return currentState + 1 
+			if (action.type === 'DOWN')
+				return currentState - 1;
+			if (action.type === 'DOUBLE_UP')
+				return currentState * 2;
+			return currentState;
+		}
+
+		
+
+		let spinnerActionCreators = {
+			up(){
+				let action = { type : 'UP'};
+				return action;
+			},
+			down(){
+				let action = { type : 'DOWN'};
+				return action;
+			},
+			doubleUp(){
+				let action = { type : 'DOUBLE_UP'};
+				return action;
+			}
+		}
+
+		let Spinner = ({ value, up, down, doubleUp }) => (
+			<section>
+				<input type="button" value="DOWN" onClick={down}/>
+				<span> [ {value} ] </span>
+				<input type="button" value="UP" onClick={up}/>
+				<input type="button" value="double Up" onClick={doubleUp}/>
+			</section>
+		);
+
+		var rootReducer = Redux.combineReducers({
+			spinnerData : spinnerReducer,
+			bugsData : bugsReducer
+		});
+		let store = Redux.createStore(rootReducer);
+		
+		let spinnerActions = Redux.bindActionCreators(spinnerActionCreators, store.dispatch);
+
+
 		let bugActions = Redux.bindActionCreators(bugActionCreators, store.dispatch);
 		function renderApp(){
-			let bugs = store.getState();
+			let storeState = store.getState(),
+				bugs = storeState.bugsData,
+				value = storeState.spinnerData;
 
-			ReactDOM.render(<BugTracker bugs={bugs} {...bugActions} />,
+			ReactDOM.render(
+				<div>
+					<Spinner value={value} {...spinnerActions} />
+					<hr/>
+					<BugTracker bugs={bugs} {...bugActions} />
+				</div>,
 				document.getElementById('root'));
 		}
 		renderApp();
