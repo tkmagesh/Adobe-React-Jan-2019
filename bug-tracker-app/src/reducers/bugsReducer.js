@@ -1,22 +1,21 @@
-let dummyBugs = [
-	{name : 'Server communication failure', isClosed : false},
-	{name : 'User actions not recognized', isClosed : true}
-];
 
-function bugsReducer(currentState = dummyBugs, action){
+function bugsReducer(currentState = [], action){
+	if (action.type === 'LOAD'){
+		return action.payload;
+	}
 	if (action.type === 'ADD_NEW'){
 		let newBug = action.payload;
 		let newState = [...currentState, newBug];
 		return newState;
 	}
 	if (action.type === 'REPLACE'){
-		let { oldBug, newBug } = action.payload;
-		let newState = currentState.map(bug => bug === oldBug ? newBug : bug);
+		let bugToReplace = action.payload;
+		let newState = currentState.map(bug => bug.id === bugToReplace.id ? bugToReplace : bug);
 		return newState;
 	}
 	if (action.type === 'REMOVE'){
-		let bugsToRemove = action.payload;
-		let newState = currentState.filter(bug => bugsToRemove.indexOf(bug) === -1);
+		let bugToRemove = action.payload;
+		let newState = currentState.filter(bug => bugToRemove.id !== bug.id);
 		return newState;
 	}
 	if (action.type === 'RESET'){

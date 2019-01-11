@@ -10,10 +10,14 @@ import BugEdit from './views/bugEdit';
 import BugList from './views/bugList';
 
 class BugTracker extends Component{
+	componentDidMount(){
+		this.props.load();
+	}
 	render(){
-		let { bugs, toggle, removeClosed, addNew, sort } = this.props;
+		let { bugs, toggle, removeClosed, addNew, sort, load } = this.props;
 		return(
 			<div>
+				{/*<input type="button" value="Load" onClick={load} />*/}
 				<BugStats bugs={bugs} />
 				<BugSort {...{bugs, sort}}/>
 				<BugEdit addNew={addNew} />
