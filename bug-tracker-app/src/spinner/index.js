@@ -1,4 +1,8 @@
 import React from 'react';
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
+
+import spinnerActionCreators from './actions';
 
 let Spinner = ({ value, up, down, doubleUp }) => (
 	<section>
@@ -9,4 +13,17 @@ let Spinner = ({ value, up, down, doubleUp }) => (
 	</section>
 );
 
-export default Spinner;
+function mapStateToProps(storeState){
+	let value = storeState.spinnerData;
+	return { value : value };
+}
+
+function mapDispatchToProps(dispatch){
+	let spinnerActions = bindActionCreators(spinnerActionCreators, dispatch);
+	return spinnerActions;
+}
+
+export default connect(
+	mapStateToProps,
+	mapDispatchToProps
+)(Spinner);
